@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ruta a Stevens Pass</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: tira de ruta tipo cartel de ruta arriba, bloques de info práctica, luego etapas con filas de lugares y botón a Google Maps. */
+:root {
+  --bg: #EDF1F4;
+  --surface: #FFFFFF;
+  --ink: #13232D;
+  --muted: #556879;
+  --line: #D2DCE3;
+  --fir: #1E5B4B;
+  --fir-soft: #DCEBE5;
+  --on-fir: #FFFFFF;
+  --signal: #BF4513;
+  --on-signal: #FFFFFF;
+  --signal-soft: #FBE7DC;
+  --rule-on-fir: rgba(255,255,255,0.28);
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1920;
+    --surface: #15252E;
+    --ink: #E6EEF2;
+    --muted: #9CB1BE;
+    --line: #28414F;
+    --fir: #6CCBAA;
+    --fir-soft: #173A33;
+    --on-fir: #0E1920;
+    --signal: #FF8A57;
+    --on-signal: #0E1920;
+    --signal-soft: #3A2318;
+    --rule-on-fir: rgba(14,25,32,0.28);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1920;
+  --surface: #15252E;
+  --ink: #E6EEF2;
+  --muted: #9CB1BE;
+  --line: #28414F;
+  --fir: #6CCBAA;
+  --fir-soft: #173A33;
+  --on-fir: #0E1920;
+  --signal: #FF8A57;
+  --on-signal: #0E1920;
+  --signal-soft: #3A2318;
+  --rule-on-fir: rgba(14,25,32,0.28);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { color-scheme: light dark; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; gap: 36px; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; border-radius: 4px; }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(34px, 7vw, 56px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+  text-wrap: balance;
+}
+h2.sec {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-wrap: balance;
+}
+h3.sub {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.2;
+  margin: 0;
+}
+.lede { margin: 0; max-width: 62ch; color: var(--muted); }
+.jump { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 16px; font-size: 14px; }
+.jump a { color: var(--fir); font-weight: 600; text-underline-offset: 3px; }
+
+/* Route strip */
+.route {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  background: var(--fir);
+  color: var(--on-fir);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.route li { padding: 14px 14px 16px; border-left: 1px solid var(--rule-on-fir); min-width: 0; }
+.route li:first-child { border-left: 0; }
+.route .stop {
+  font-family: var(--font-display);
+  font-stretch: 80%;
+  font-weight: 800;
+  font-size: 19px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  display: block;
+  margin-bottom: 6px;
+}
+.route .detail { font-size: 13px; line-height: 1.35; display: block; }
+@media (max-width: 680px) {
+  .route { grid-template-columns: 1fr; }
+  .route li { border-left: 0; border-top: 1px solid var(--rule-on-fir); }
+  .route li:first-child { border-top: 0; }
+}
+
+/* Generic panel */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.panel p { margin: 0; color: var(--muted); max-width: 66ch; }
+.panel p strong { color: var(--ink); }
+.times-scroll { overflow-x: auto; }
+table.times { border-collapse: collapse; width: 100%; min-width: 440px; font-variant-numeric: tabular-nums; }
+.times th, .times td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; white-space: nowrap; }
+.times thead th { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.times td { font-family: var(--font-mono); }
+.times tbody th { font-weight: 600; color: var(--ink); }
+.times tr:last-child th, .times tr:last-child td { border-bottom: 0; }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* Payment tiles */
+.pay { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.tile {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.tile .where { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fir); }
+.tile .verdict { font-family: var(--font-display); font-weight: 800; font-size: 22px; line-height: 1.1; }
+.tile p { margin: 0; font-size: 15px; color: var(--muted); }
+.tile p strong { color: var(--ink); }
+.tile.free .verdict { color: var(--fir); }
+
+/* Checklists */
+.checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.checks > div { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.checks ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.checks li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; font-size: 15px; }
+.checks li::before {
+  content: "";
+  width: 14px; height: 14px;
+  margin-top: 4px;
+  border: 1.5px solid var(--fir);
+  border-radius: 3px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 8px 14px;
+  font: 600 14px/1 var(--font-body);
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1.5px solid var(--fir);
+  background: transparent;
+  color: var(--fir);
+}
+.btn:hover { background: var(--fir-soft); }
+.btn.solid { background: var(--signal); border-color: var(--signal); color: var(--on-signal); }
+.btn.solid:hover { filter: brightness(1.06); background: var(--signal); }
+.btn.quiet { border-color: var(--line); color: var(--muted); font-weight: 500; }
+.btn.quiet:hover { background: var(--fir-soft); color: var(--ink); }
+
+/* Filters */
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.filters .label { font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-right: 4px; }
+.chip {
+  font: 500 14px/1 var(--font-body);
+  min-height: 36px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.chip[aria-pressed="true"] { background: var(--fir); border-color: var(--fir); color: var(--on-fir); }
+
+/* Stages and places */
+.places-block { display: flex; flex-direction: column; gap: 16px; }
+.stages { display: flex; flex-direction: column; gap: 36px; }
+.stage-head { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.stage-head p { margin: 0; color: var(--muted); font-size: 15px; max-width: 66ch; }
+.places { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.place {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 16px;
+  padding: 16px 18px;
+  border-top: 1px solid var(--line);
+}
+.place:first-child { border-top: 0; }
+.place.crit { background: var(--signal-soft); box-shadow: inset 5px 0 0 var(--signal); }
+.place:first-child.crit { border-radius: 10px 10px 0 0; }
+.place:last-child.crit { border-radius: 0 0 10px 10px; }
+.place-main { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.cat {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fir);
+}
+.place.crit .cat { color: var(--signal); font-weight: 500; }
+.name { font-family: var(--font-display); font-weight: 700; font-size: 19px; line-height: 1.2; margin: 0; overflow-wrap: anywhere; }
+.addr { color: var(--muted); font-size: 14px; overflow-wrap: anywhere; }
+.note { font-size: 15px; max-width: 64ch; }
+.hours { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+.place-actions { display: flex; flex-direction: column; gap: 8px; align-items: stretch; justify-content: flex-start; }
+@media (max-width: 560px) {
+  .place { grid-template-columns: 1fr; }
+  .place-actions { flex-direction: row; flex-wrap: wrap; }
+}
+
+/* Confirm box */
+.confirm {
+  border: 1.5px dashed var(--muted);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.confirm ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; max-width: 70ch; }
+.foot { color: var(--muted); font-size: 13px; max-width: 70ch; margin: 0; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-size: 14px; }
+@media (prefers-reduced-motion: no-preference) { .btn, .chip { transition: background-color 0.15s ease, color 0.15s ease; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Work &amp; Travel · invierno 2026/27</p>
+    <h1>Ruta a Stevens Pass</h1>
+    <p class="lede">Todo lo que vas a necesitar desde que aterrices en Seattle hasta que estés instalado en Leavenworth. Cada lugar tiene un botón que lo abre en Google Maps.</p>
+    <nav class="jump" aria-label="Secciones">
+      <a href="#shuttle">Shuttle</a>
+      <a href="#transporte">Cómo pagar el transporte</a>
+      <a href="#llevar">Qué llevar a mano</a>
+      <a href="#lugares">Lugares</a>
+      <a href="#confirmar">Para confirmar</a>
+    </nav>
+  </header>
+
+  <ol class="route" aria-label="Recorrido del shuttle">
+    <li><span class="stop">SeaTac</span><span class="detail">Aeropuerto. El shuttle te levanta en Arrivals Drive.</span></li>
+    <li><span class="stop">Cle Elum</span><span class="detail">Parada de 10 min para ir al baño.</span></li>
+    <li><span class="stop">Peshastin</span><span class="detail">Big Y Park &amp; Ride. Unas 3 horas desde SeaTac.</span></li>
+    <li><span class="stop">Leavenworth</span><span class="detail">Bus 22 gratis hasta Safeway, después taxi al alojamiento.</span></li>
+    <li><span class="stop">Stevens Pass</span><span class="detail">Shuttle de empleados gratis, unos 60 km desde Leavenworth.</span></li>
+  </ol>
+
+  <section class="panel" id="shuttle" aria-labelledby="h-shuttle">
+    <h2 class="sec" id="h-shuttle">Wenatchee Valley Shuttle, SeaTac a Peshastin</h2>
+    <p>Horarios para el período del 30 de noviembre al 18 de diciembre, que incluye tu fecha de inicio. Son horas aproximadas. Se reserva online, hay que llegar 10 a 15 minutos antes y el shuttle no espera. <strong>Pasaje de ida: USD 75.</strong> Las valijas se pagan aparte y <strong>no aceptan efectivo</strong>, sólo tarjeta.</p>
+    <div class="times-scroll">
+      <table class="times">
+        <thead><tr><th scope="col"></th><th scope="col">Sale de SeaTac</th><th scope="col">Llega a Peshastin</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Mañana</th><td>9:30</td><td>12:20</td></tr>
+          <tr><th scope="row">Mediodía</th><td>12:30</td><td>15:20</td></tr>
+          <tr><th scope="row">Tarde</th><td>15:30</td><td>18:20</td></tr>
+          <tr><th scope="row">Noche</th><td>18:30</td><td>21:20</td></tr>
+          <tr><th scope="row">Noche tarde</th><td>21:30</td><td>00:20</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>En diciembre oscurece alrededor de las 16:15. Con la salida de las 12:30 llegás de día. Con la de las 15:30 llegás de noche, y el último bus 22 pasa por Leavenworth cerca de las 21:20.</p>
+    <div class="links">
+      <a class="btn solid" href="https://www.wenatcheevalleyshuttle.com/reservations/new?lang=en" target="_blank" rel="noopener">Reservar shuttle ↗</a>
+      <a class="btn" href="https://www.wenatcheevalleyshuttle.com/schedules?lang=en" target="_blank" rel="noopener">Horarios y fotos del punto de encuentro ↗</a>
+      <a class="btn" id="route-link" href="#" target="_blank" rel="noopener">Peshastin, Safeway y alojamiento ↗</a>
+    </div>
+  </section>
+
+  <section id="transporte" aria-labelledby="h-pay" style="display:flex;flex-direction:column;gap:14px">
+    <h2 class="sec" id="h-pay">Cómo pagar el transporte</h2>
+    <div class="pay">
+      <div class="tile">
+        <span class="where">Seattle y alrededores</span>
+        <span class="verdict">ORCA o tarjeta</span>
+        <p>Sirve para el tren Link, los buses y el Monorail de la zona de Seattle. <strong>No sirve en Leavenworth.</strong></p>
+        <p>Desde febrero de 2026 podés pagar apoyando una tarjeta contactless o el celular con Apple Pay o Google Pay. Si tu tarjeta argentina no anda, comprá la ORCA, la "SUBE" de Seattle, en las máquinas de las estaciones del Link o en el app myORCA. Cada viaje sale unos USD 3.</p>
+      </div>
+      <div class="tile free">
+        <span class="where">Leavenworth y Wenatchee</span>
+        <span class="verdict">Gratis</span>
+        <p>Link Transit no cobra pasaje en ninguna línea, así que no necesitás tarjeta.</p>
+        <p>El <strong>bus 22</strong> une Wenatchee, Cashmere, Peshastin y Leavenworth. Es el que te lleva de Peshastin a Safeway, y a Wenatchee para el trámite del Seguro Social.</p>
+      </div>
+      <div class="tile">
+        <span class="where">De Seattle a Leavenworth</span>
+        <span class="verdict">Shuttle privado</span>
+        <p>Wenatchee Valley Shuttle es una empresa aparte. Se reserva online, USD 75 de ida, y las valijas se pagan con tarjeta.</p>
+        <p>Ni la ORCA ni Link Transit cubren este tramo.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="llevar" aria-labelledby="h-llevar">
+    <h2 class="sec" id="h-llevar">Qué llevar a mano</h2>
+    <div class="checks">
+      <div>
+        <h3 class="sub">En la mochila, no en la valija</h3>
+        <ul>
+          <li>Pasaporte con la visa J-1</li>
+          <li>DS-2019 impreso</li>
+          <li>Carta u oferta de trabajo de Stevens Pass</li>
+          <li>Dirección y teléfono del alojamiento, anotados en papel</li>
+          <li>Tarjeta de crédito o débito, porque el shuttle no acepta efectivo</li>
+          <li>Algo de efectivo en dólares, por las dudas</li>
+          <li>Campera y gorro a mano para la llegada</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="sub">En el celular</h3>
+        <ul>
+          <li>Reserva del shuttle, que también te sirve para el descuento del Sleep Inn</li>
+          <li>Uber o Lyft</li>
+          <li>myORCA o Transit GO Ticket, para el tren en Seattle</li>
+          <li>WhatsApp, que es el contacto que te pidió Stevens Pass</li>
+          <li>Mapa de Leavenworth descargado en Google Maps para usar sin conexión</li>
+          <li>Esta página</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="sub">En los primeros días</h3>
+        <ul>
+          <li>Bajar tu I-94 en i94.cbp.dhs.gov</li>
+          <li>Revisar en Beacon si CIEE te pide hacer un check-in al llegar, algo habitual en la J-1</li>
+          <li>Pedir el SSN en Wenatchee, con el bus 22 gratis hasta Columbia Station</li>
+          <li>Retirar el uniforme alrededor del 8 o 9 de diciembre</li>
+          <li>Chip o plan de datos de un operador local, si no viajás con eSIM</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="places-block" id="lugares" aria-labelledby="h-lugares">
+    <h2 class="sec" id="h-lugares">Lugares</h2>
+    <div class="filters" role="group" aria-label="Filtrar por tipo de lugar" id="filters">
+      <span class="label">Mostrar</span>
+    </div>
+    <div class="stages" id="stages"></div>
+  </section>
+
+  <section class="confirm" id="confirmar" aria-labelledby="h-confirm">
+    <h2 class="sec" id="h-confirm">Para confirmar antes de viajar</h2>
+    <ul>
+      <li>Reservar el shuttle online para la fecha y la salida que te convenga.</li>
+      <li>Preguntarle al Sleep Inn los horarios y el punto de retiro de su shuttle gratis. Las páginas de reservas lo mencionan, pero no lo verifiqué con el hotel.</li>
+      <li>Confirmar con Stevens Pass cuál es tu alojamiento definitivo. Leavenworth Haus es el que mencionaste en tus mails.</li>
+      <li>Revisar en linktransit.com los horarios del bus 22 para el día que llegás. Cambian según el día de la semana.</li>
+      <li>Confirmar dónde para el bus 22 en Peshastin. Tiene una parada llamada "US 2 &amp; US 97 Junction", que debería ser el cruce donde está el Big Y.</li>
+      <li>Probar si tu tarjeta argentina funciona para pagar apoyándola. Si no, comprá la ORCA en la estación del aeropuerto.</li>
+      <li>Ubicar el punto del shuttle en SeaTac con las fotos del sitio del shuttle. En la página, el botón abre la dirección del aeropuerto, no el cordón exacto.</li>
+    </ul>
+  </section>
+
+  <p class="foot">Horarios de tiendas según Google Maps y TomTom, pueden cambiar. Horarios y tarifas del shuttle según wenatcheevalleyshuttle.com. Datos del bus 22 según linktransit.com. Datos de ORCA y del pago con tarjeta según myorca.com y la prensa local.</p>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function () {
+  var CATS = { transporte: "Transporte", dormir: "Dormir", ropa: "Ropa y botas", comida: "Comida", paseo: "Para pasear", servicios: "Servicios y trámites" };
+
+  var STAGES = [
+    {
+      title: "Día 1: aeropuerto SeaTac",
+      sub: "Si aterrizás después de las 15:00, Stevens Pass recomienda dormir cerca del aeropuerto.",
+      places: [
+        { n: "Wenatchee Valley Shuttle, punto de retiro", cat: "transporte", crit: true,
+          addr: "17801 International Blvd, SeaTac, WA 98158", q: "47.44362,-122.3028217",
+          note: "Arrivals Drive, cerca de la Puerta 02, en el extremo sur del nivel de Baggage Claim. El mostrador de check-in está cerca de la Puerta 00." },
+        { n: "Estación Link SeaTac/Airport", cat: "transporte",
+          addr: "International Blvd, SeaTac, WA", q: "SeaTac/Airport Station Link light rail, SeaTac, WA",
+          note: "Tren al centro de Seattle, unos 40 minutos hasta Westlake. Pasa cada 8 a 15 minutos. Acá podés comprar la ORCA en las máquinas." },
+        { n: "Sleep Inn Sea Tac Airport", cat: "dormir",
+          addr: "20406 International Blvd, SeaTac, WA 98198", q: "Sleep Inn Sea Tac Airport, 20406 International Blvd, SeaTac, WA", pid: "ChIJ2Q2ENG5bkFQRVduZE0Vm6dM",
+          note: "Hotel que recomienda Stevens Pass. Hasta 20% de descuento mostrando la reserva del shuttle. Está a 5,3 km de la terminal, unos 12 minutos en auto. Al lado hay un IHOP para comer.",
+          hours: "Shuttle gratis 24 h al aeropuerto y al tren, a confirmar con el hotel" },
+        { n: "Estación Angle Lake", cat: "transporte",
+          addr: "SeaTac, WA", q: "Angle Lake Station, SeaTac, WA",
+          note: "Primera estación de la línea 1, a 7 a 10 minutos caminando del Sleep Inn según los sitios de reservas. Desde acá vas al aeropuerto o al centro." }
+      ]
+    },
+    {
+      title: "Ropa de nieve y botas cerca del aeropuerto",
+      sub: "Stevens Pass no entrega calzado, así que las botas son por tu cuenta. Las distancias son en auto desde el Sleep Inn.",
+      places: [
+        { n: "Outdoor Research Outlet", cat: "ropa",
+          addr: "21402 24th Ave S K, Des Moines, WA 98198", q: "Outdoor Research Outlet, 21402 24th Ave S, Des Moines, WA", pid: "ChIJR6hpiERbkFQR3CzaK_J2-To",
+          note: "Outlet de ropa de montaña. Las reseñas hablan de descuentos del 30% al 70%. A 2,5 km del hotel, unos 5 minutos en auto.",
+          hours: "Lun a mié 10–17, jue a sáb 10–18, dom 10–17" },
+        { n: "REI Tukwila", cat: "ropa",
+          addr: "240 Andover Park W, Tukwila, WA 98188", q: "REI Tukwila, 240 Andover Park W, Tukwila, WA", pid: "ChIJO4YdxdZckFQRSrdAZrQ_XpQ",
+          note: "El REI más cercano al aeropuerto. Botas de nieve y camperas. A 8,1 km del hotel, unos 11 minutos en auto.",
+          hours: "Lun a sáb 10–20, dom 10–18" },
+        { n: "Westfield Southcenter", cat: "ropa",
+          addr: "2800 Southcenter Mall, Seattle, WA 98188", q: "Westfield Southcenter, Tukwila, WA", pid: "ChIJ1W80hNNckFQRsPmFJRJvK2s",
+          note: "Shopping grande con The North Face y otras marcas. Algunas reseñas mencionan un shuttle gratis desde hoteles de SeaTac, a confirmar con el Sleep Inn.",
+          hours: "Lun a sáb 10–21, dom 11–19" },
+        { n: "Burlington", cat: "ropa",
+          addr: "17500 Southcenter Pkwy, Tukwila, WA 98188", q: "Burlington, 17500 Southcenter Pkwy, Tukwila, WA", pid: "ChIJwfJ_AsRckFQREiBU0djjvFU",
+          note: "Ropa más económica, con menos oferta de ropa técnica.", hours: "Todos los días 9–22" },
+        { n: "Ross Dress for Less", cat: "ropa",
+          addr: "17672 Southcenter Pkwy, Tukwila, WA 98188", q: "Ross Dress for Less, 17672 Southcenter Pkwy, Tukwila, WA", pid: "ChIJYYndOsFckFQR2wmD1pOIXUU",
+          note: "Ropa más económica, con menos oferta de ropa técnica.", hours: "Hasta las 22 casi todos los días" },
+        { n: "T-Mobile, Southcenter", cat: "servicios",
+          addr: "984 Southcenter Mall, Tukwila, WA 98188", q: "T-Mobile, 984 Southcenter Mall, Tukwila, WA",
+          note: "Tienda de operador, por si querés un chip o un plan de datos." },
+        { n: "REI Seattle Flagship", cat: "ropa",
+          addr: "222 Yale Ave N, Seattle, WA 98109", q: "REI Seattle Flagship, 222 Yale Ave N, Seattle, WA", pid: "ChIJa_52_zMVkFQRIsX5KSvv41k",
+          note: "La tienda con más variedad, pero queda en el centro de Seattle. Sólo conviene si ya vas a pasear por la ciudad.",
+          hours: "Lun a sáb 9–21, dom 10–19" }
+      ]
+    },
+    {
+      title: "Si te sobra tiempo en Seattle",
+      sub: "Todo esto queda cerca de la estación Westlake, a unos 40 minutos del aeropuerto en el tren Link. Mejor de día, y con las valijas guardadas en el hotel.",
+      places: [
+        { n: "Estación Westlake", cat: "transporte",
+          addr: "Westlake Center, Seattle, WA", q: "Westlake Station, Seattle, WA",
+          note: "Bajate acá para el centro. De acá sale el Monorail al Space Needle." },
+        { n: "Pike Place Market", cat: "paseo",
+          addr: "85 Pike St, Seattle, WA 98101", q: "Pike Place Market, 85 Pike St, Seattle, WA",
+          note: "El mercado clásico de Seattle, frente a la bahía y a unas cuadras de Westlake. Tiene puestos de pescado, comida y el primer Starbucks." },
+        { n: "Seattle Great Wheel y la costanera", cat: "paseo",
+          addr: "1301 Alaskan Way, Seattle, WA 98101", q: "Seattle Great Wheel, 1301 Alaskan Way, Seattle, WA",
+          note: "La vuelta al mundo sobre el muelle, bajando desde Pike Place. Buena vista de la bahía." },
+        { n: "Space Needle", cat: "paseo",
+          addr: "400 Broad St, Seattle, WA 98109", q: "Space Needle, 400 Broad St, Seattle, WA",
+          note: "La torre de Seattle. Se llega en el Monorail desde Westlake, que acepta ORCA y tarjeta." }
+      ]
+    },
+    {
+      title: "Día 2: Peshastin y Leavenworth",
+      sub: "Stevens Pass recomienda comprar al menos una semana de comida antes de ir al alojamiento.",
+      places: [
+        { n: "Big Y Park & Ride, Peshastin", cat: "transporte", crit: true,
+          addr: "9490 Jeske Rd, Peshastin, WA 98847", q: "Big Y Park and Ride, 9490 Jeske Rd, Peshastin, WA", pid: "ChIJCSJRNF5MmlQR6aEZpR0jF70",
+          note: "Acá te deja el Wenatchee Valley Shuttle. El bus 22 gratis tiene una parada en el cruce de la US 2 y la US 97, donde está este Park & Ride.",
+          hours: "Abierto 24 h" },
+        { n: "Willkommen Park & Ride, parada del bus 22", cat: "transporte",
+          addr: "116 River Bend Dr, Leavenworth, WA 98826", q: "Willkommen Park and Ride, 116 River Bend Dr, Leavenworth, WA",
+          note: "Parada del bus 22 en la misma dirección que Safeway. Te bajás acá para hacer las compras y después tomás el taxi al alojamiento." },
+        { n: "Safeway y farmacia", cat: "comida",
+          addr: "116 River Bend Dr, Leavenworth, WA 98826", q: "Safeway, 116 River Bend Dr, Leavenworth, WA", pid: "ChIJN2xN_INNmlQRfe20Jr1CK_4",
+          note: "Supermercado grande. La farmacia está en el mismo local, teléfono 509-548-5811.",
+          hours: "Todos los días 5:00 a 1:00" },
+        { n: "Dan's Food Market", cat: "comida",
+          addr: "1329 US Hwy 2, Leavenworth, WA 98826", q: "Dan's Food Market, 1329 US Hwy 2, Leavenworth, WA", pid: "ChIJ29Gs5ohNmlQR9pIhQCTgp5g",
+          note: "Supermercado local con muy buenas reseñas, tiene panadería y mostrador de comida caliente.",
+          hours: "Todos los días 5–22" },
+        { n: "Sage Mountain Natural Foods", cat: "comida",
+          addr: "11685 US Hwy 2, Leavenworth, WA 98826", q: "Sage Mountain Natural Foods, Leavenworth, WA", pid: "ChIJYXKNhYVNmlQRgS3PXVvEWKw",
+          note: "Tienda de productos naturales y comidas preparadas.", hours: "Lun a sáb 8–20, dom 11–20" },
+        { n: "Leavenworth Haus", cat: "dormir",
+          addr: "100 Ward Strasse, Leavenworth, WA 98826", q: "Leavenworth Haus, 100 Ward Strasse, Leavenworth, WA",
+          note: "El alojamiento que le mencionaste a Stevens Pass. Confirmá que sea el definitivo antes de dárselo a un taxista." },
+        { n: "Der Sportsmann", cat: "ropa",
+          addr: "837 Front St, Leavenworth, WA 98826", q: "Der Sportsmann, 837 Front St, Leavenworth, WA", pid: "ChIJmeFygoxNmlQRdEtLCtNDYfk",
+          note: "Camperas, ropa térmica y botas de nieve en el centro del pueblo. Sirve si preferís comprar allá.",
+          hours: "Lun a jue 9–19, vie y sáb 9–21, dom 9–20" },
+        { n: "Arlberg Sports Haus", cat: "ropa",
+          addr: "1207 Front St, Leavenworth, WA 98826", q: "Arlberg Sports Haus, 1207 Front St, Leavenworth, WA", pid: "ChIJW8Y9OIlNmlQRGemQf1J305A",
+          note: "Tienda deportiva en el centro. No encontré sus horarios." }
+      ]
+    },
+    {
+      title: "Vida en Leavenworth y trámites",
+      sub: "Servicios para las primeras semanas. Wenatchee queda a una ida en el bus 22 gratis.",
+      places: [
+        { n: "Cascade Medical Center", cat: "servicios",
+          addr: "W Commercial St, Leavenworth, WA 98826", q: "Cascade Medical Center, Leavenworth, WA",
+          note: "Hospital y clínica del pueblo. Teléfono 509-548-5815." },
+        { n: "Correo USPS", cat: "servicios",
+          addr: "960 US Hwy 2, Leavenworth, WA 98826", q: "USPS Post Office, 960 US Hwy 2, Leavenworth, WA",
+          note: "Para mandar o recibir paquetes. Teléfono 509-548-7212." },
+        { n: "Leavenworth Public Library", cat: "servicios",
+          addr: "700 US Hwy 2, Leavenworth, WA 98826", q: "Leavenworth Public Library, 700 US Hwy 2, Leavenworth, WA",
+          note: "Biblioteca pública del pueblo. Las bibliotecas en EE. UU. suelen tener wifi y computadoras gratis." },
+        { n: "Centro de Visitantes de Leavenworth", cat: "servicios",
+          addr: "940 US Hwy 2, Leavenworth, WA 98826", q: "Leavenworth Chamber of Commerce Visitor Center, 940 US Hwy 2, Leavenworth, WA",
+          note: "Información del pueblo, eventos y transporte. Teléfono 509-548-5807." },
+        { n: "WaFd Bank", cat: "servicios",
+          addr: "708 US Hwy 2, Leavenworth, WA 98826", q: "WaFd Bank, 708 US Hwy 2, Leavenworth, WA",
+          note: "Banco en el centro, por si necesitás un cajero." },
+        { n: "Cashmere Valley Bank", cat: "servicios",
+          addr: "980 US Hwy 2, Leavenworth, WA 98826", q: "Cashmere Valley Bank, 980 US Hwy 2, Leavenworth, WA",
+          note: "Banco en el centro, por si necesitás un cajero." },
+        { n: "Columbia Station, Wenatchee", cat: "transporte",
+          addr: "300 S Columbia St, Wenatchee, WA 98801", q: "Columbia Station Link Transit, 300 S Columbia St, Wenatchee, WA",
+          note: "Terminal de Link Transit donde termina el bus 22. Queda a pocas cuadras de la oficina del Seguro Social." },
+        { n: "Social Security Administration, Wenatchee", cat: "servicios",
+          addr: "129 S Chelan Ave, Wenatchee, WA 98801", q: "Social Security Administration, 129 S Chelan Ave, Wenatchee, WA", pid: "ChIJpdtMnerMm1QRkn64qwoSpJQ",
+          note: "La oficina más cercana a Leavenworth para pedir el SSN. Conviene sacar turno. Teléfono 800-772-1213.",
+          hours: "Lun a vie 9–16" },
+        { n: "Walmart Supercenter, Wenatchee", cat: "comida",
+          addr: "2000 N Wenatchee Ave, Wenatchee, WA 98801", q: "Walmart Supercenter, 2000 N Wenatchee Ave, Wenatchee, WA",
+          note: "Para compras grandes de la casa. Queda en el norte de Wenatchee, así que desde Columbia Station necesitás otro bus local o un Uber." }
+      ]
+    },
+    {
+      title: "Destino",
+      sub: "",
+      places: [
+        { n: "Stevens Pass Ski Area", cat: "transporte",
+          addr: "US-2, Skykomish, WA 98288", q: "Stevens Pass Ski Area, Skykomish, WA", pid: "ChIJDaQL2StdkFQRZ5c7p9U5LQ8",
+          note: "Tu lugar de trabajo. El shuttle de empleados es gratis. Tu uniforme se retira alrededor del 8 o 9 de diciembre." }
+      ]
+    }
+  ];
+
+  function mapsUrl(p) {
+    var u = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(p.q);
+    if (p.pid) u += "&query_place_id=" + p.pid;
+    return u;
+  }
+
+  document.getElementById("route-link").href =
+    "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent("Big Y Park and Ride, 9490 Jeske Rd, Peshastin, WA") +
+    "&waypoints=" + encodeURIComponent("Safeway, 116 River Bend Dr, Leavenworth, WA") +
+    "&destination=" + encodeURIComponent("Leavenworth Haus, 100 Ward Strasse, Leavenworth, WA") +
+    "&travelmode=driving";
+
+  var current = "todo";
+  var toastTimer = null;
+
+  function toast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.hidden = true; }, 2200);
+  }
+
+  function copyText(text) {
+    var done = function () { toast("Dirección copiada"); };
+    var fallback = function () {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) { toast("No se pudo copiar, seleccioná la dirección a mano"); }
+      document.body.removeChild(ta);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else { fallback(); }
+  }
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  function renderFilters() {
+    var box = document.getElementById("filters");
+    var items = [["todo", "Todo"]].concat(Object.keys(CATS).map(function (k) { return [k, CATS[k]]; }));
+    items.forEach(function (it) {
+      var b = el("button", "chip", it[1]);
+      b.type = "button";
+      b.setAttribute("aria-pressed", it[0] === current ? "true" : "false");
+      b.addEventListener("click", function () {
+        current = it[0];
+        Array.prototype.forEach.call(box.querySelectorAll(".chip"), function (c, i) {
+          c.setAttribute("aria-pressed", items[i][0] === current ? "true" : "false");
+        });
+        renderStages();
+      });
+      box.appendChild(b);
+    });
+  }
+
+  function renderStages() {
+    var root = document.getElementById("stages");
+    root.textContent = "";
+    STAGES.forEach(function (s) {
+      var list = s.places.filter(function (p) { return current === "todo" || p.cat === current; });
+      if (!list.length) return;
+      var sec = el("section", "stage");
+      var head = el("div", "stage-head");
+      head.appendChild(el("h3", "sub", s.title));
+      if (s.sub) head.appendChild(el("p", null, s.sub));
+      sec.appendChild(head);
+      var ul = el("ul", "places");
+      list.forEach(function (p) {
+        var li = el("li", "place" + (p.crit ? " crit" : ""));
+        var main = el("div", "place-main");
+        main.appendChild(el("span", "cat", CATS[p.cat]));
+        main.appendChild(el("h4", "name", p.n));
+        if (p.addr) main.appendChild(el("span", "addr", p.addr));
+        if (p.note) main.appendChild(el("span", "note", p.note));
+        if (p.hours) main.appendChild(el("span", "hours", p.hours));
+        li.appendChild(main);
+        var act = el("div", "place-actions");
+        var a = el("a", "btn" + (p.crit ? " solid" : ""), "Abrir en Maps ↗");
+        a.href = mapsUrl(p);
+        a.target = "_blank";
+        a.rel = "noopener";
+        act.appendChild(a);
+        if (p.addr) {
+          var c = el("button", "btn quiet", "Copiar dirección");
+          c.type = "button";
+          c.addEventListener("click", function () { copyText(p.addr); });
+          act.appendChild(c);
+        }
+        li.appendChild(act);
+        ul.appendChild(li);
+      });
+      sec.appendChild(ul);
+      root.appendChild(sec);
+    });
+  }
+
+  renderFilters();
+  renderStages();
+})();
+</script>
+
+</body>
+</html>
